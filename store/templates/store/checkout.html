@@ -65,7 +65,7 @@
             </div>
             {% endfor %}
             <h5>Items:   {{order.get_cart_items}}</h5>
-            <h5>Total:   ${{order.get_cart_total|floatformat:2}}</h5>
+            <h5>Total:   ₹{{order.get_cart_total|floatformat:2}}</h5>
         </div>
     </div>
 </div>
@@ -75,8 +75,8 @@
     var total = '{{order.get_cart_total|floatformat:2}}'
 
     if (shipping == 'False'){
-         document.getElementById('shipping-info').innerHTML = ''
-    }
+        document.getElementById('shipping-info').innerHTML = ''
+   }
 
     if (user != 'AnonymousUser'){
          document.getElementById('user-info').innerHTML = ''
