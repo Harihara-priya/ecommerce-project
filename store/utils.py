@@ -77,9 +77,9 @@ def cookieCart(request):
                     'name': product.name,
                     'price': product.price,
                     'imageURL': product.imageURL,  # Ensure imageURL is a valid field
+                    'digital': product.digital,
                 },
-                'quantity': quantity,
-                'digital': product.digital,
+                'quantity': quantity,                
                 'get_total': total,
             }
             items.append(item)
@@ -104,6 +104,7 @@ def cartData(request):
           order, created = Order.objects.get_or_create(customer=customer, complete=False)
           items = order.orderitem_set.all()
           cartItems = order.get_cart_items
+          return {'items': items, 'order': order, 'cartItems': cartItems}
      else:
           #Create empty cart for now for non-logged in user
           cookieData = cookieCart(request)
@@ -111,3 +112,37 @@ def cartData(request):
           order = cookieData['order']
           items = cookieData['items']
           return{'items':items, 'order':order, 'cartItems':cartItems}
+     
+def guestOrder(request, data ):
+
+    print('User is not logged in')
+    print('COOKIES:', request.COOKIES)
+
+    name = data['form']['name']
+    email = data['form']['email']
+
+    cookieData = cookieCart(request)
+    items = cookieData['items']
+
+    customer, created = Customer.objects.get_or_create(
+				email=email,
+				)
+    customer.name = name
+    customer.save()
+
+    order = Order.objects.create(
+			customer=customer,
+			complete=False,
+			)
+    
+    for item in items:
+        product = Product.objects.get(id=item['id'])
+        orderItem = OrderItem.objects.create(
+            product=product,
+				order=order,
+				quantity=item['quantity'],
+        )
+
+        return customer, order
+        
+     
